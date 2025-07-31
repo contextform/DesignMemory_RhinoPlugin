@@ -25,7 +25,7 @@ namespace Contextform.Utils
 
         public string FreeApiEndpoint 
         { 
-            get => _settings?.FreeApiEndpoint ?? "https://api.contextform.com/generate";
+            get => _settings?.FreeApiEndpoint ?? "https://contextform-api.onrender.com/api/generate";
         }
 
         public bool UseFreeEndpoint 
@@ -85,7 +85,7 @@ namespace Contextform.Utils
         public string ClaudeApiKey { get; set; } = string.Empty;
 
         [JsonProperty("free_api_endpoint")]
-        public string FreeApiEndpoint { get; set; } = "https://api.contextform.com/generate"; // Your free endpoint
+        public string FreeApiEndpoint { get; set; } = "https://contextform-api.onrender.com/api/generate"; // Your free endpoint
 
         [JsonProperty("use_free_endpoint")]
         public bool UseFreeEndpoint { get; set; } = true; // Default to free for MVP
