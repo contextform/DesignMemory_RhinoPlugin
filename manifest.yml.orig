@@ -1,0 +1,17 @@
+---
+name: "Contextform"
+version: "1.0.0"
+authors:
+  - "Contextform Team"
+description: "AI Design Memory Plugin - Captures your modeling process and uses AI to regenerate designs based on any criteria"
+url: "https://github.com/contextform/rhino-plugin"
+secret:
+  id: "3f85ca5d-7b5b-4c0e-9f2a-1d6e8c4b9a2e"
+
+distro:
+  rhino: "8.*"
+
+entrypoints:
+  - type: "rhino_plugin"
+    module: "Contextform.rhp"
+    object: "ContextformPlugin"
