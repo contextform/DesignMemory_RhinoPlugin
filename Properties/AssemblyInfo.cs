@@ -6,7 +6,7 @@ using Rhino.PlugIns;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Contextform")]
-[assembly: AssemblyDescription("AI Design Memory Plugin for Rhino")]
+[assembly: AssemblyDescription("AI Design Memory Plugin with Intelligent Workflow Capture")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Contextform Team")]
 [assembly: AssemblyProduct("Contextform")]
@@ -32,8 +32,8 @@ using Rhino.PlugIns;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 
 // Rhino plugin information
 [assembly: PlugInDescription(DescriptionType.Address, "")]
@@ -43,4 +43,4 @@ using Rhino.PlugIns;
 [assembly: PlugInDescription(DescriptionType.Fax, "")]
 [assembly: PlugInDescription(DescriptionType.Organization, "Contextform Team")]
 [assembly: PlugInDescription(DescriptionType.UpdateUrl, "")]
-[assembly: PlugInDescription(DescriptionType.WebSite, "https://github.com/contextform/rhino-plugin")]
+[assembly: PlugInDescription(DescriptionType.WebSite, "https://github.com/contextform/DesignMemory_RhinoPlugin")]
