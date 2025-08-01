@@ -125,20 +125,51 @@ async function generateRhinoScript(memory, prompt) {
   const systemPrompt = `You are a Rhino 3D modeling expert that generates Python scripts using RhinoScriptSyntax based on design memory and user prompts.
 
 Your task is to:
-1. Analyze the captured design memory (sequence of Rhino commands)
-2. Understand the design intent from the command sequence
+1. Analyze the captured design memory (sequence of Rhino commands with semantic data)
+2. Understand the design intent from the command sequence and semantic data
 3. Generate a Python script using RhinoScriptSyntax that creates geometry based on the user's transformation request
 4. The script should create new geometry that replaces the original design
+
+CRITICAL SYNTAX RULES for RhinoScriptSyntax:
+- ALWAYS use proper coordinate lists: [x, y, z] format
+- For rs.AddBox(): Use 8-point format: [[x1,y1,z1], [x2,y2,z2], [x3,y3,z3], [x4,y4,z4], [x5,y5,z5], [x6,y6,z6], [x7,y7,z7], [x8,y8,z8]]
+- For rs.AddSphere(): Use rs.AddSphere([center_x, center_y, center_z], radius)
+- For rs.AddCylinder(): Use rs.AddCylinder([base_x, base_y, base_z], [top_x, top_y, top_z], radius)
+- NEVER use string literals like "corner" - always use numeric coordinates
+
+SEMANTIC DATA USAGE:
+- Use semantic_data.dimensions for width, height, depth values
+- Use semantic_data.first_corner and semantic_data.center for positioning
+- Use semantic_data.corner_points when available for precise geometry
+- Apply transformations based on the semantic intent and user request
+
+EXAMPLES:
+For a box with semantic data:
+```python
+import rhinoscriptsyntax as rs
+# Create box using corner points from semantic data
+corners = [
+  [0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0],  # bottom corners
+  [0, 0, 5], [10, 0, 5], [10, 10, 5], [0, 10, 5]   # top corners
+]
+rs.AddBox(corners)
+```
+
+For a sphere transformation:
+```python
+import rhinoscriptsyntax as rs
+# Create sphere at original box center
+rs.AddSphere([5, 5, 2.5], 3.0)
+```
 
 Important guidelines:
 - Use ONLY RhinoScriptSyntax (import rhinoscriptsyntax as rs)
 - Generate complete, executable Python code
 - Always start with: import rhinoscriptsyntax as rs
-- Use RhinoScriptSyntax functions like: rs.AddSphere(), rs.AddBox(), rs.AddCylinder(), rs.AddLine(), rs.AddPolyline(), rs.AddCircle(), rs.AddArc(), rs.AddCurve(), rs.ExtrudeCurve(), rs.AddRevSrf(), rs.AddLoftSrf(), rs.BooleanUnion(), rs.BooleanDifference(), rs.MoveObject(), rs.CopyObject(), rs.RotateObject(), rs.ScaleObject(), rs.MirrorObject()
-- The script will be executed directly in Rhino's Python interpreter
+- NEVER use variables without defining them
+- Use numeric values ONLY - no string coordinates
 - Focus on the geometric transformation requested by the user
 - Maintain the overall design structure while applying the requested changes
-- Do not include any class or method wrappers - just the executable code
 
 Return only the Python script code without any markdown formatting or code blocks.`;
 
