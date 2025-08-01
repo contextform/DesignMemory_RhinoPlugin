@@ -148,6 +148,14 @@ CRITICAL SYNTAX RULES for RhinoScriptSyntax:
 - For rs.AddCylinder(): Use rs.AddCylinder([base_x, base_y, base_z], [top_x, top_y, top_z], radius)
 - NEVER use string literals like "corner" - always use numeric coordinates
 
+CORRECT RHINOSCRIPTSYNTAX FUNCTIONS (DO NOT INVENT FUNCTIONS):
+- Transformation: rs.MoveObject(), rs.CopyObject(), rs.RotateObject(), rs.ScaleObject()
+- Creation: rs.AddRectangle(), rs.AddCircle(), rs.AddLine(), rs.AddPolyline()
+- Points: rs.AddPoint(), NOT rs.RotatePoint() (this function does not exist!)
+- Curves: rs.AddCurve(), rs.AddArc(), rs.AddEllipse()
+- NEVER use functions like rs.RotatePoint(), rs.TransformPoint() - these do not exist!
+- For point rotation, use rs.PointTransform() with transformation matrix
+
 ENHANCED MEMORY DATA USAGE:
 - Use semantic_data.dimensions for width, height, depth values
 - Use semantic_data.first_corner and semantic_data.center for positioning

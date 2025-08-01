@@ -61,8 +61,17 @@ namespace Contextform.Utils
             
             try
             {
+                // Validate script before execution
+                var validationError = ValidateScript(scriptCode);
+                if (!string.IsNullOrEmpty(validationError))
+                {
+                    RhinoApp.WriteLine($"❌ Script validation failed: {validationError}");
+                    RhinoApp.WriteLine($"Generated script:\n{scriptCode}");
+                    return;
+                }
+                
                 // Execute Python script using Rhino's Python script engine
-                RhinoApp.WriteLine("Executing Python script...");
+                RhinoApp.WriteLine("✅ Script validation passed - executing Python script...");
                 
                 // Create a temporary Python script file
                 var tempPath = System.IO.Path.GetTempFileName();
@@ -72,6 +81,7 @@ namespace Contextform.Utils
                 {
                     // Write the Python script to the temp file
                     System.IO.File.WriteAllText(tempPath, scriptCode);
+                    RhinoApp.WriteLine($"📄 Script written to: {tempPath}");
                     
                     // Execute the Python script file
                     var command = $"_-RunPythonScript \"{tempPath}\"";
@@ -79,33 +89,66 @@ namespace Contextform.Utils
                     
                     if (!result)
                     {
-                        RhinoApp.WriteLine("Python script execution failed");
+                        RhinoApp.WriteLine("❌ Python script execution failed");
+                        RhinoApp.WriteLine($"Generated script:\n{scriptCode}");
+                        RhinoApp.WriteLine($"Temp file preserved at: {tempPath}");
+                        return; // Don't delete temp file for debugging
                     }
                     else
                     {
-                        RhinoApp.WriteLine("Python script executed successfully");
+                        RhinoApp.WriteLine("✅ Python script executed successfully");
                     }
                 }
                 finally
                 {
-                    // Clean up the temp file
+                    // Clean up the temp file only if execution succeeded
                     if (System.IO.File.Exists(tempPath))
                     {
                         try { System.IO.File.Delete(tempPath); } catch { }
                     }
                 }
                 
-                // Log the script that was received
-                RhinoApp.WriteLine($"Script processed: {scriptCode.Substring(0, Math.Min(100, scriptCode.Length))}...");
-                
                 // Redraw views to show the new geometry
                 doc.Views.Redraw();
             }
             catch (Exception ex)
             {
-                RhinoApp.WriteLine($"Error in ExecuteDirectScript: {ex.Message}");
+                RhinoApp.WriteLine($"❌ Error in ExecuteDirectScript: {ex.Message}");
+                RhinoApp.WriteLine($"Generated script:\n{scriptCode}");
                 throw;
             }
+        }
+
+        private string ValidateScript(string scriptCode)
+        {
+            // Check for common invalid RhinoScriptSyntax functions
+            var invalidFunctions = new[]
+            {
+                "rs.RotatePoint(", "rs.TransformPoint(", "rs.MovePoint(", 
+                "rs.ScalePoint(", "rs.CopyPoint(", "rs.MirrorPoint("
+            };
+            
+            foreach (var invalidFunc in invalidFunctions)
+            {
+                if (scriptCode.Contains(invalidFunc))
+                {
+                    return $"Invalid RhinoScriptSyntax function: {invalidFunc.TrimEnd('(')} does not exist. Use rs.PointTransform() with transformation matrix or object transformation functions instead.";
+                }
+            }
+            
+            // Check for basic Python import
+            if (!scriptCode.Contains("import rhinoscriptsyntax") && !scriptCode.Contains("rhinoscriptsyntax as rs"))
+            {
+                return "Script must import rhinoscriptsyntax (import rhinoscriptsyntax as rs)";
+            }
+            
+            // Check for common syntax issues
+            if (scriptCode.Contains("rs.") && !scriptCode.Contains("import rhinoscriptsyntax as rs"))
+            {
+                return "Script uses 'rs.' but doesn't import 'rhinoscriptsyntax as rs'";
+            }
+            
+            return null; // No validation errors
         }
     }
 }
