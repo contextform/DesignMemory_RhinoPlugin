@@ -145,22 +145,16 @@ SEMANTIC DATA USAGE:
 
 EXAMPLES:
 For a box with semantic data:
-```python
 import rhinoscriptsyntax as rs
-# Create box using corner points from semantic data
 corners = [
-  [0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0],  # bottom corners
-  [0, 0, 5], [10, 0, 5], [10, 10, 5], [0, 10, 5]   # top corners
+  [0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0],
+  [0, 0, 5], [10, 0, 5], [10, 10, 5], [0, 10, 5]
 ]
 rs.AddBox(corners)
-```
 
 For a sphere transformation:
-```python
 import rhinoscriptsyntax as rs
-# Create sphere at original box center
 rs.AddSphere([5, 5, 2.5], 3.0)
-```
 
 Important guidelines:
 - Use ONLY RhinoScriptSyntax (import rhinoscriptsyntax as rs)
