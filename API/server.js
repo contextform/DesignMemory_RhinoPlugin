@@ -122,27 +122,25 @@ async function generateRhinoScript(memory, prompt) {
   console.log(`[${new Date().toISOString()}] Memory commands count:`, memory.commands?.length);
   console.log(`[${new Date().toISOString()}] Prompt length:`, prompt?.length);
   
-  const systemPrompt = `You are a Rhino 3D modeling expert that generates C# RhinoCommon scripts based on design memory and user prompts.
+  const systemPrompt = `You are a Rhino 3D modeling expert that generates Python scripts using RhinoScriptSyntax based on design memory and user prompts.
 
 Your task is to:
 1. Analyze the captured design memory (sequence of Rhino commands)
 2. Understand the design intent from the command sequence
-3. Generate a new C# RhinoCommon script that creates geometry based on the user's transformation request
+3. Generate a Python script using RhinoScriptSyntax that creates geometry based on the user's transformation request
 4. The script should create new geometry that replaces the original design
 
 Important guidelines:
-- Use only RhinoCommon API calls
-- Generate complete, executable C# code
-- Include proper using statements
-- Handle geometry creation and transformation
-- The script will be executed directly in Rhino
+- Use ONLY RhinoScriptSyntax (import rhinoscriptsyntax as rs)
+- Generate complete, executable Python code
+- Always start with: import rhinoscriptsyntax as rs
+- Use RhinoScriptSyntax functions like: rs.AddSphere(), rs.AddBox(), rs.AddCylinder(), rs.AddLine(), rs.AddPolyline(), rs.AddCircle(), rs.AddArc(), rs.AddCurve(), rs.ExtrudeCurve(), rs.AddRevSrf(), rs.AddLoftSrf(), rs.BooleanUnion(), rs.BooleanDifference(), rs.MoveObject(), rs.CopyObject(), rs.RotateObject(), rs.ScaleObject(), rs.MirrorObject()
+- The script will be executed directly in Rhino's Python interpreter
 - Focus on the geometric transformation requested by the user
 - Maintain the overall design structure while applying the requested changes
-- Use 'var doc = RhinoDoc.ActiveDoc;' to get the document
-- Call 'doc.Views.Redraw();' at the end
 - Do not include any class or method wrappers - just the executable code
 
-Return only the C# script code without any markdown formatting or code blocks.`;
+Return only the Python script code without any markdown formatting or code blocks.`;
 
   const userPrompt = `Design Memory (captured modeling session):
 ${JSON.stringify(memory, null, 2)}
@@ -151,7 +149,7 @@ User Request: ${prompt}
 
 Original geometry IDs that will be replaced: ${memory.original_geometry_ids?.join(', ') || 'none'}
 
-Please generate a C# RhinoCommon script that creates new geometry based on the design memory and user request. The script should create geometry that fulfills the user's transformation request while maintaining the original design intent.`;
+Please generate a Python RhinoScriptSyntax script that creates new geometry based on the design memory and user request. The script should create geometry that fulfills the user's transformation request while maintaining the original design intent.`;
 
   console.log(`[${new Date().toISOString()}] System prompt length:`, systemPrompt.length);
   console.log(`[${new Date().toISOString()}] User prompt length:`, userPrompt.length);
@@ -182,6 +180,7 @@ Please generate a C# RhinoCommon script that creates new geometry based on the d
     
     // Clean up the script - remove any markdown formatting
     const cleanScript = script
+      .replace(/```python\n?/g, '')
       .replace(/```csharp\n?/g, '')
       .replace(/```\n?/g, '')
       .trim();
