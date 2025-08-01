@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contextform - AI Design Memory Plugin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 0; text-align: center; }
+        .hero h1 { font-size: 3.5rem; font-weight: 700; margin-bottom: 20px; }
+        .hero p { font-size: 1.4rem; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .download-section { background: #f8f9fa; padding: 60px 0; }
+        .download-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .download-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; }
+        .download-card h3 { color: #667eea; margin-bottom: 15px; font-size: 1.5rem; }
+        .download-btn { display: inline-block; background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; margin: 15px 10px; transition: all 0.3s; }
+        .download-btn:hover { background: #5a67d8; transform: translateY(-2px); }
+        .download-btn.secondary { background: #48bb78; }
+        .download-btn.secondary:hover { background: #38a169; }
+        .features { padding: 80px 0; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; margin-top: 50px; }
+        .feature { text-align: center; }
+        .feature-icon { font-size: 3rem; margin-bottom: 20px; }
+        .feature h3 { color: #2d3748; margin-bottom: 15px; font-size: 1.4rem; }
+        .section-title { text-align: center; font-size: 2.5rem; font-weight: 700; color: #2d3748; margin-bottom: 20px; }
+        .section-subtitle { text-align: center; font-size: 1.2rem; color: #718096; max-width: 600px; margin: 0 auto; }
+        .commands { background: #f8f9fa; padding: 60px 0; }
+        .commands-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 40px; }
+        .command-category { background: white; padding: 20px; border-radius: 8px; }
+        .command-category h4 { color: #667eea; margin-bottom: 10px; font-weight: 600; }
+        .footer { background: #2d3748; color: white; padding: 40px 0; text-align: center; }
+        .beta-badge { background: #48bb78; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-left: 15px; }
+        .examples { padding: 60px 0; }
+        .example-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-top: 40px; }
+        .example { background: #f7fafc; padding: 25px; border-radius: 8px; border-left: 4px solid #667eea; }
+        .example h4 { color: #2d3748; margin-bottom: 10px; }
+        .example code { background: #667eea; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="container">
+            <h1>🤖 Contextform <span class="beta-badge">FREE BETA</span></h1>
+            <p>AI Design Memory Plugin with Intelligent Workflow Capture for Rhino 8</p>
+            <p>Transform your designs with natural language: "make this organic", "optimize for 3D printing", "add art deco patterns"</p>
+        </div>
+    </section>
+
+    <section class="download-section">
+        <div class="container">
+            <h2 class="section-title">📥 Download v1.1.0</h2>
+            <p class="section-subtitle">Choose your installation method - both include the full AI-powered experience</p>
+            
+            <div class="download-grid">
+                <div class="download-card">
+                    <h3>🎯 Recommended: YAK Package</h3>
+                    <p>Easy installation via Rhino's Package Manager</p>
+                    <a href="#" class="download-btn" onclick="downloadFile('contextform-1.1.0-rh8_21-any.yak')">
+                        Download .yak file
+                    </a>
+                    <div style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                        1. Download → 2. Open Rhino → 3. Type "PackageManager" → 4. Install from File
+                    </div>
+                </div>
+                
+                <div class="download-card">
+                    <h3>🔧 Manual: RHP Plugin</h3>
+                    <p>Direct plugin file for manual installation</p>
+                    <a href="#" class="download-btn secondary" onclick="downloadFile('Contextform.rhp')">
+                        Download .rhp file
+                    </a>
+                    <div style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                        1. Download → 2. Rhino: Tools → Options → Plug-ins → Install
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="https://github.com/contextform/DesignMemory_RhinoPlugin" class="download-btn" style="background: #333;">
+                    📚 Full Documentation on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">🧠 What Makes It Intelligent</h2>
+            <p class="section-subtitle">Unlike simple macro recorders, Contextform understands your modeling workflow and design intent</p>
+            
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Semantic Understanding</h3>
+                    <p>Captures dimensions, positions, relationships - not just command names. Understands the <em>why</em> behind your modeling choices.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Workflow Intelligence</h3>
+                    <p>Tracks dependencies between commands, understands creation → modification → finishing workflows.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Context-Aware AI</h3>
+                    <p>Generates transformations that respect your original design structure and modeling relationships.</p>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3>50+ Commands</h3>
+                    <p>Comprehensive support for Rhino primitives, curves, surfaces, transformations, booleans, and editing operations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="examples">
+        <div class="container">
+            <h2 class="section-title">💡 Try These Smart Prompts</h2>
+            <p class="section-subtitle">With workflow intelligence, you can use sophisticated transformation requests</p>
+            
+            <div class="example-grid">
+                <div class="example">
+                    <h4>🌿 Workflow-Aware</h4>
+                    <p><code>"Keep the array pattern but make the base geometry organic"</code></p>
+                    <p>AI understands the relationship between your base geometry and array operation.</p>
+                </div>
+                
+                <div class="example">
+                    <h4>📏 Dimension-Smart</h4>
+                    <p><code>"Scale everything 150% but preserve all proportional relationships"</code></p>
+                    <p>Uses captured semantic data to maintain design proportions during scaling.</p>
+                </div>
+                
+                <div class="example">
+                    <h4>🔄 Dependency-Aware</h4>
+                    <p><code>"Change the boolean operation but keep the same base shapes"</code></p>
+                    <p>Understands which objects were combined and can modify the combination method.</p>
+                </div>
+                
+                <div class="example">
+                    <h4>🎨 Intent-Driven</h4>
+                    <p><code>"Optimize for 3D printing while maintaining the design philosophy"</code></p>
+                    <p>Applies functional changes while respecting the original modeling approach.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="commands">
+        <div class="container">
+            <h2 class="section-title">📋 Supported Commands</h2>
+            <p class="section-subtitle">Comprehensive coverage across all major Rhino command categories</p>
+            
+            <div class="commands-grid">
+                <div class="command-category">
+                    <h4>🔷 Primitives</h4>
+                    <p>Box, Sphere, Cylinder, Cone, Plane, Torus</p>
+                </div>
+                
+                <div class="command-category">
+                    <h4>📏 Curves</h4>
+                    <p>Line, Circle, Rectangle, Arc, Polyline, Ellipse, Polygon</p>
+                </div>
+                
+                <div class="command-category">
+                    <h4>🌊 Surfaces</h4>
+                    <p>Extrude, Loft, Revolve, Sweep1, Sweep2, NetworkSrf</p>
+                </div>
+                
+                <div class="command-category">
+                    <h4>🔄 Transformations</h4>
+                    <p>Move, Copy, Rotate, Scale, Mirror, Array operations</p>
+                </div>
+                
+                <div class="command-category">
+                    <h4>🔧 Boolean Operations</h4>
+                    <p>Union, Difference, Intersection, Split</p>
+                </div>
+                
+                <div class="command-category">
+                    <h4>✂️ Editing</h4>
+                    <p>Fillet, Chamfer, Trim, Split, Join, Offset, Rebuild</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <h3>🚀 Ready to Transform Your CAD Workflow?</h3>
+            <p>Download the free beta and start creating with AI-native design memory!</p>
+            <div style="margin-top: 20px;">
+                <a href="https://github.com/contextform/DesignMemory_RhinoPlugin" style="color: #667eea; text-decoration: none; margin: 0 15px;">GitHub</a>
+                <a href="https://github.com/contextform/DesignMemory_RhinoPlugin/issues" style="color: #667eea; text-decoration: none; margin: 0 15px;">Support</a>
+                <a href="https://contextform.dev" style="color: #667eea; text-decoration: none; margin: 0 15px;">Website</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+                © 2025 Contextform Team - Transforming CAD with AI-Native Design Memory
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function downloadFile(filename) {
+            // In a real implementation, these would be actual download links
+            // For now, direct to GitHub releases
+            const githubBase = 'https://github.com/contextform/DesignMemory_RhinoPlugin/releases/download/v1.1.0/';
+            window.open(githubBase + filename, '_blank');
+        }
+    </script>
+</body>
+</html>

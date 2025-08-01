@@ -1,6 +1,6 @@
 ---
 name: Contextform
-version: 1.1.0.0
+version: 1.1.0-beta
 authors:
 - Contextform Team
 description: AI Design Memory Plugin with Intelligent Workflow Capture - Captures 50+ Rhino commands with semantic understanding, command relationships, and dependency analysis. Transform designs with AI using natural language prompts.
