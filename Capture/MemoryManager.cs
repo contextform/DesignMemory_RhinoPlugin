@@ -9,6 +9,7 @@ namespace Contextform.Capture
     {
         private readonly string _dataDirectory;
         private DesignMemory _currentMemory;
+        private CommandDependencyManager _dependencyManager;
 
         public DesignMemory CurrentMemory => _currentMemory;
 
@@ -25,6 +26,7 @@ namespace Contextform.Capture
         public void StartNewSession()
         {
             _currentMemory = new DesignMemory();
+            _dependencyManager = new CommandDependencyManager();
             RhinoApp.WriteLine($"Started new capture session: {_currentMemory.SessionId}");
         }
 
@@ -37,6 +39,9 @@ namespace Contextform.Capture
 
             command.Sequence = _currentMemory.Commands.Count + 1;
             _currentMemory.Commands.Add(command);
+            
+            // Add to dependency manager for relationship analysis
+            _dependencyManager.AddCommand(command);
         }
 
         public void AddOriginalGeometry(string geometryId)
@@ -56,11 +61,23 @@ namespace Contextform.Capture
 
             try
             {
+                // Add dependency analysis to the memory before saving
+                if (_dependencyManager != null)
+                {
+                    _currentMemory.DependencyAnalysis = _dependencyManager.GetDependencyAnalysis();
+                }
+                
                 string fileName = $"session_{_currentMemory.SessionId}_{DateTime.Now:yyyyMMdd_HHmmss}.json";
                 string filePath = Path.Combine(_dataDirectory, fileName);
                 
                 File.WriteAllText(filePath, _currentMemory.ToJson());
                 RhinoApp.WriteLine($"Design memory saved: {fileName}");
+                
+                // Print dependency analysis summary
+                if (_currentMemory.DependencyAnalysis != null)
+                {
+                    RhinoApp.WriteLine($"Captured {_currentMemory.Commands.Count} commands with dependency analysis");
+                }
             }
             catch (Exception ex)
             {
@@ -85,6 +102,12 @@ namespace Contextform.Capture
         public void ClearCurrentSession()
         {
             _currentMemory = null;
+            _dependencyManager = null;
+        }
+        
+        public CommandDependencyManager GetDependencyManager()
+        {
+            return _dependencyManager;
         }
     }
 }

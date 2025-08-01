@@ -75,8 +75,19 @@ app.post('/api/generate', async (req, res) => {
     console.log(`[${new Date().toISOString()}] Generation request:`, {
       commandCount: memory.commands.length,
       prompt: prompt.substring(0, 100) + (prompt.length > 100 ? '...' : ''),
-      sessionId: memory.session_id
+      sessionId: memory.session_id,
+      hasDependencyAnalysis: !!memory.dependency_analysis,
+      workflowCount: memory.dependency_analysis?.workflows?.length || 0
     });
+    
+    // Log dependency analysis if available
+    if (memory.dependency_analysis) {
+      console.log(`[${new Date().toISOString()}] Dependency Analysis:`, {
+        commandTypes: memory.dependency_analysis.command_types,
+        workflowStages: memory.dependency_analysis.workflow_stages,
+        workflowCount: memory.dependency_analysis.workflows?.length || 0
+      });
+    }
 
     // Generate script using Claude
     const script = await generateRhinoScript(memory, prompt);
@@ -122,13 +133,13 @@ async function generateRhinoScript(memory, prompt) {
   console.log(`[${new Date().toISOString()}] Memory commands count:`, memory.commands?.length);
   console.log(`[${new Date().toISOString()}] Prompt length:`, prompt?.length);
   
-  const systemPrompt = `You are a Rhino 3D modeling expert that generates Python scripts using RhinoScriptSyntax based on design memory and user prompts.
+  const systemPrompt = `You are a Rhino 3D modeling expert that generates Python scripts using RhinoScriptSyntax based on enhanced design memory and user prompts.
 
 Your task is to:
-1. Analyze the captured design memory (sequence of Rhino commands with semantic data)
-2. Understand the design intent from the command sequence and semantic data
+1. Analyze the captured design memory (sequence of Rhino commands with semantic data, relationships, and dependency analysis)
+2. Understand the design intent from command sequences, relationships, and workflow patterns
 3. Generate a Python script using RhinoScriptSyntax that creates geometry based on the user's transformation request
-4. The script should create new geometry that replaces the original design
+4. The script should create new geometry that replaces the original design while respecting command dependencies
 
 CRITICAL SYNTAX RULES for RhinoScriptSyntax:
 - ALWAYS use proper coordinate lists: [x, y, z] format
@@ -137,11 +148,16 @@ CRITICAL SYNTAX RULES for RhinoScriptSyntax:
 - For rs.AddCylinder(): Use rs.AddCylinder([base_x, base_y, base_z], [top_x, top_y, top_z], radius)
 - NEVER use string literals like "corner" - always use numeric coordinates
 
-SEMANTIC DATA USAGE:
+ENHANCED MEMORY DATA USAGE:
 - Use semantic_data.dimensions for width, height, depth values
 - Use semantic_data.first_corner and semantic_data.center for positioning
 - Use semantic_data.corner_points when available for precise geometry
-- Apply transformations based on the semantic intent and user request
+- Use relationships.workflow_stage to understand creation vs modification vs finishing operations
+- Use relationships.command_category to understand geometry types (primitive, curve, surface, etc.)
+- Use relationships.design_intent to understand the purpose of each command
+- Use transformation_data when available for precise movement, scaling, or rotation information
+- Use dependency_analysis.workflows to understand complex modeling patterns
+- Apply transformations based on the semantic intent, relationships, and user request
 
 EXAMPLES:
 For a box with semantic data:
@@ -163,7 +179,9 @@ Important guidelines:
 - NEVER use variables without defining them
 - Use numeric values ONLY - no string coordinates
 - Focus on the geometric transformation requested by the user
-- Maintain the overall design structure while applying the requested changes
+- Maintain the overall design structure and command relationships while applying the requested changes
+- Consider workflow patterns and dependencies when generating the script
+- Respect the original design intent while implementing the requested modifications
 
 Return only the Python script code without any markdown formatting or code blocks.`;
 

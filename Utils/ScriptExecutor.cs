@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CSharp;
-using System.CodeDom.Compiler;
-using System.Reflection;
 using Rhino;
 using Rhino.DocObjects;
+using Rhino.Geometry;
+using Rhino.Commands;
 
 namespace Contextform.Utils
 {
@@ -18,9 +17,8 @@ namespace Contextform.Utils
                 // First, delete the original geometry
                 DeleteOriginalGeometry(originalGeometryIds);
 
-                // Compile and execute the generated script
-                var compiledAssembly = CompileScript(scriptCode);
-                ExecuteCompiledScript(compiledAssembly);
+                // Execute the script directly without compilation
+                ExecuteDirectScript(scriptCode);
 
                 RhinoApp.WriteLine("Script executed successfully - geometry replaced!");
                 RhinoDoc.ActiveDoc.Views.Redraw();
@@ -57,114 +55,57 @@ namespace Contextform.Utils
             RhinoApp.WriteLine($"Deleted {objectsToDelete.Count} original objects");
         }
 
-        private Assembly CompileScript(string scriptCode)
+        private void ExecuteDirectScript(string scriptCode)
         {
-            var provider = new CSharpCodeProvider();
-            var parameters = new CompilerParameters();
+            var doc = RhinoDoc.ActiveDoc;
             
-            parameters.GenerateInMemory = true;
-            parameters.GenerateExecutable = false;
-            
-            // Add required references
-            parameters.ReferencedAssemblies.Add("System.dll");
-            parameters.ReferencedAssemblies.Add("System.Core.dll");
-            parameters.ReferencedAssemblies.Add("System.Drawing.dll");
-            parameters.ReferencedAssemblies.Add(@"C:\Program Files\Rhino 8\System\RhinoCommon.dll");
-
-            // Wrap the script in a class if it's not already
-            var fullScript = WrapScriptInClass(scriptCode);
-
-            var results = provider.CompileAssemblyFromSource(parameters, fullScript);
-
-            if (results.Errors.HasErrors)
+            try
             {
-                var errorMessages = results.Errors.Cast<CompilerError>()
-                    .Select(error => $"Line {error.Line}: {error.ErrorText}")
-                    .ToArray();
+                // Execute Python script using Rhino's Python script engine
+                RhinoApp.WriteLine("Executing Python script...");
                 
-                throw new Exception($"Script compilation failed:\n{string.Join("\n", errorMessages)}");
+                // Create a temporary Python script file
+                var tempPath = System.IO.Path.GetTempFileName();
+                tempPath = System.IO.Path.ChangeExtension(tempPath, ".py");
+                
+                try
+                {
+                    // Write the Python script to the temp file
+                    System.IO.File.WriteAllText(tempPath, scriptCode);
+                    
+                    // Execute the Python script file
+                    var command = $"_-RunPythonScript \"{tempPath}\"";
+                    var result = RhinoApp.RunScript(command, true);
+                    
+                    if (!result)
+                    {
+                        RhinoApp.WriteLine("Python script execution failed");
+                    }
+                    else
+                    {
+                        RhinoApp.WriteLine("Python script executed successfully");
+                    }
+                }
+                finally
+                {
+                    // Clean up the temp file
+                    if (System.IO.File.Exists(tempPath))
+                    {
+                        try { System.IO.File.Delete(tempPath); } catch { }
+                    }
+                }
+                
+                // Log the script that was received
+                RhinoApp.WriteLine($"Script processed: {scriptCode.Substring(0, Math.Min(100, scriptCode.Length))}...");
+                
+                // Redraw views to show the new geometry
+                doc.Views.Redraw();
             }
-
-            return results.CompiledAssembly;
-        }
-
-        private string WrapScriptInClass(string scriptCode)
-        {
-            // Check if the script already contains a class definition
-            if (scriptCode.Contains("class ") && scriptCode.Contains("public static void Execute"))
+            catch (Exception ex)
             {
-                return AddUsingStatements(scriptCode);
+                RhinoApp.WriteLine($"Error in ExecuteDirectScript: {ex.Message}");
+                throw;
             }
-
-            // Wrap the script in a class
-            var wrappedScript = $@"
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Rhino;
-using Rhino.Geometry;
-using Rhino.DocObjects;
-
-public class GeneratedScript
-{{
-    public static void Execute()
-    {{
-        var doc = RhinoDoc.ActiveDoc;
-        
-{IndentCode(scriptCode, 2)}
-        
-        doc.Views.Redraw();
-    }}
-}}";
-
-            return wrappedScript;
-        }
-
-        private string AddUsingStatements(string scriptCode)
-        {
-            var usingStatements = @"using System;
-using System.Collections.Generic;
-using System.Linq;
-using Rhino;
-using Rhino.Geometry;
-using Rhino.DocObjects;
-
-";
-            
-            if (!scriptCode.Contains("using System;"))
-            {
-                return usingStatements + scriptCode;
-            }
-            
-            return scriptCode;
-        }
-
-        private string IndentCode(string code, int indentLevel)
-        {
-            var indentString = new string(' ', indentLevel * 4);
-            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            
-            return string.Join("\n", lines.Select(line => 
-                string.IsNullOrWhiteSpace(line) ? line : indentString + line));
-        }
-
-        private void ExecuteCompiledScript(Assembly assembly)
-        {
-            var type = assembly.GetTypes().FirstOrDefault(t => t.GetMethod("Execute") != null);
-            
-            if (type == null)
-            {
-                throw new Exception("No Execute method found in generated script");
-            }
-
-            var executeMethod = type.GetMethod("Execute");
-            
-            if (executeMethod == null || !executeMethod.IsStatic)
-            {
-                throw new Exception("Execute method must be public and static");
-            }
-
-            executeMethod.Invoke(null, null);
         }
     }
 }

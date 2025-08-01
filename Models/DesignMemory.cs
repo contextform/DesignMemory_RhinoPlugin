@@ -18,6 +18,9 @@ namespace Contextform.Models
         [JsonProperty("original_geometry_ids")]
         public List<string> OriginalGeometryIds { get; set; }
 
+        [JsonProperty("dependency_analysis")]
+        public Dictionary<string, object> DependencyAnalysis { get; set; }
+
         public DesignMemory()
         {
             SessionId = Guid.NewGuid().ToString();

@@ -145,8 +145,10 @@ namespace Contextform.UI
                 }
                 else
                 {
-                    _statusLabel.Text = "Failed to generate script";
+                    _statusLabel.Text = "Failed to generate script - API connection error";
                     _statusLabel.TextColor = Colors.Red;
+                    MessageBox.Show("Could not connect to the AI service. Please check your internet connection and try again.", 
+                        "API Error", MessageBoxType.Error);
                 }
             }
             catch (Exception ex)
@@ -206,7 +208,31 @@ namespace Contextform.UI
             
             foreach (var cmd in memory.Commands)
             {
-                text += $"{cmd.Sequence}. {cmd.Command}\n";
+                text += $"{cmd.Sequence}. {cmd.Command}";
+                
+                // Show semantic data if available (preferred)
+                if (cmd.SemanticData != null && cmd.SemanticData.ContainsKey("intent"))
+                {
+                    text += $"\n   → {cmd.SemanticData["intent"]}";
+                }
+                // Fallback to geometry data
+                else if (cmd.GeometryData != null && cmd.GeometryData.Count > 0)
+                {
+                    foreach (var geo in cmd.GeometryData)
+                    {
+                        text += $"\n   → {geo.Type}";
+                        if (geo.BoundingBox != null && geo.BoundingBox.Dimensions != null)
+                        {
+                            var dims = geo.BoundingBox.Dimensions;
+                            text += $" [{dims.Width:F1} x {dims.Height:F1} x {dims.Depth:F1}]";
+                        }
+                        if (geo.Properties != null && geo.Properties.ContainsKey("volume"))
+                        {
+                            text += $" Vol: {geo.Properties["volume"]:F1}";
+                        }
+                    }
+                }
+                text += "\n";
             }
 
             _memoryDisplay.Text = text;
