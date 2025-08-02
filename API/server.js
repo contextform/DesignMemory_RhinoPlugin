@@ -156,12 +156,14 @@ CORRECT RHINOSCRIPTSYNTAX FUNCTIONS (based on official API docs):
 
 FUNCTIONS THAT DO NOT EXIST (never use these):
 - rs.AddPolygon() - Use rs.AddPolyline() with closed point list instead
-- rs.Cos(), rs.Sin(), rs.Tan() - Use Python's math.cos(), math.sin(), math.tan() instead  
+- rs.Cos(), rs.Sin(), rs.Tan(), rs.cosd(), rs.sind(), rs.tand() - Use Python's math.cos(), math.sin(), math.tan() instead  
 - rs.RotatePoint(), rs.TransformPoint(), rs.MovePoint(), rs.ScalePoint() - Use rs.PointTransform() instead
 
 MATHEMATICAL OPERATIONS:
 - RhinoScriptSyntax has NO built-in math functions
 - ALWAYS use Python's math module: import math, then math.cos(), math.sin(), math.pi, math.radians()
+- For degree-based calculations: math.cos(math.radians(degrees)) or math.sin(math.radians(degrees))
+- NEVER use rs.cosd(), rs.sind() - these do not exist
 - For coordinate calculations, use standard Python arithmetic and math module
 
 ENHANCED MEMORY DATA USAGE:
