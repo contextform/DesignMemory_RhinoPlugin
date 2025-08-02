@@ -148,13 +148,21 @@ CRITICAL SYNTAX RULES for RhinoScriptSyntax:
 - For rs.AddCylinder(): Use rs.AddCylinder([base_x, base_y, base_z], [top_x, top_y, top_z], radius)
 - NEVER use string literals like "corner" - always use numeric coordinates
 
-CORRECT RHINOSCRIPTSYNTAX FUNCTIONS (DO NOT INVENT FUNCTIONS):
-- Transformation: rs.MoveObject(), rs.CopyObject(), rs.RotateObject(), rs.ScaleObject()
-- Creation: rs.AddRectangle(), rs.AddCircle(), rs.AddLine(), rs.AddPolyline()
-- Points: rs.AddPoint(), NOT rs.RotatePoint() (this function does not exist!)
-- Curves: rs.AddCurve(), rs.AddArc(), rs.AddEllipse()
-- NEVER use functions like rs.RotatePoint(), rs.TransformPoint() - these do not exist!
-- For point rotation, use rs.PointTransform() with transformation matrix
+CORRECT RHINOSCRIPTSYNTAX FUNCTIONS (based on official API docs):
+- Curve Creation: rs.AddArc(), rs.AddArc3Pt(), rs.AddCircle(), rs.AddCircle3Pt(), rs.AddCurve(), rs.AddEllipse(), rs.AddEllipse3Pt(), rs.AddInterpCurve(), rs.AddLine(), rs.AddNurbsCurve(), rs.AddPolyline(), rs.AddRectangle(), rs.AddSpiral()
+- Transformation: rs.MoveObject(), rs.CopyObject(), rs.RotateObject(), rs.ScaleObject(), rs.MirrorObject()
+- Points: rs.AddPoint(), rs.PointTransform() with transformation matrix
+- Analysis: rs.CurveLength(), rs.CurveArea(), rs.CurveClosestPoint(), rs.CurveDegree()
+
+FUNCTIONS THAT DO NOT EXIST (never use these):
+- rs.AddPolygon() - Use rs.AddPolyline() with closed point list instead
+- rs.Cos(), rs.Sin(), rs.Tan() - Use Python's math.cos(), math.sin(), math.tan() instead  
+- rs.RotatePoint(), rs.TransformPoint(), rs.MovePoint(), rs.ScalePoint() - Use rs.PointTransform() instead
+
+MATHEMATICAL OPERATIONS:
+- RhinoScriptSyntax has NO built-in math functions
+- ALWAYS use Python's math module: import math, then math.cos(), math.sin(), math.pi, math.radians()
+- For coordinate calculations, use standard Python arithmetic and math module
 
 ENHANCED MEMORY DATA USAGE:
 - Use semantic_data.dimensions for width, height, depth values
@@ -182,8 +190,10 @@ rs.AddSphere([5, 5, 2.5], 3.0)
 
 Important guidelines:
 - Use ONLY RhinoScriptSyntax (import rhinoscriptsyntax as rs)
+- Import math module when needed (import math)
 - Generate complete, executable Python code
 - Always start with: import rhinoscriptsyntax as rs
+- For math operations, add: import math
 - NEVER use variables without defining them
 - Use numeric values ONLY - no string coordinates
 - Focus on the geometric transformation requested by the user
